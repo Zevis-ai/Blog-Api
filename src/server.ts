@@ -8,6 +8,7 @@
  */
 
 import express from "express";
+import cors from "cors";
 
 /**
  * Custom modules
@@ -15,10 +16,32 @@ import express from "express";
 import config from "./config";
 
 /**
+ * Types
+ */
+
+import type { CorsOptions } from "cors";
+
+
+/**
  * Express App initial
  */
 
 const app = express();
+
+// Confg CORS initial
+const corsOptions: CorsOptions = {
+    origin(origin, callback){
+        if(config.NODE_ENV === "development" || !origin || config.WHITELIST_ORIGINS.includes(origin)){
+            callback(null, true);
+        }else{
+            callback(new Error(`CORS Error ${origin} is not allowed`), false);
+        }
+        console.log(`CORS Error ${origin} is not allowed`);
+    }
+}
+
+//Apply cors middleware
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
     res.json({
