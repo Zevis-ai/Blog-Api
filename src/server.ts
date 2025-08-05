@@ -9,11 +9,15 @@
 
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import compression from "compression";
+import helmet from "helmet";
 
 /**
  * Custom modules
  */
 import config from "./config";
+import limiter from "./lib/express_rate_limit";
 
 /**
  * Types
@@ -42,6 +46,25 @@ const corsOptions: CorsOptions = {
 
 //Apply cors middleware
 app.use(cors(corsOptions));
+
+// Enable JSON request body parsing
+app.use(express.json());
+
+// Enanle URL encoded request body parsing
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+app.use(compression({
+    threshold: 1024, //only compress if the response size is greater than 1024 bytes
+}));
+
+
+
+//Apply helmet middleware
+app.use(helmet());
+
+//Apply rate limit middleware
+app.use(limiter);
 
 app.get("/", (req, res) => {
     res.json({
