@@ -19,7 +19,7 @@ import helmet from "helmet";
 import config from "./config";
 import limiter from "./lib/express_rate_limit";
 import { connectToDatabase, disconnectFromDatabase } from "@/lib/mongoose";
-import { looger } from "@/lib/winston";
+import { logger } from "@/lib/winston";
 
 /**
  * Router
@@ -47,7 +47,7 @@ const corsOptions: CorsOptions = {
         }else{
             callback(new Error(`CORS Error ${origin} is not allowed`), false);
         }
-        looger.warn(`CORS Error ${origin} is not allowed`);
+        logger.warn(`CORS Error ${origin} is not allowed`);
     }
 }
 
@@ -80,10 +80,10 @@ app.use(limiter);
         app.use("/api/v1", v1Routes);
         
         app.listen(config.PORT, () => {
-            looger.info(`Server is running on http://localhost:${config.PORT}`);
+            logger.info(`Server is running on http://localhost:${config.PORT}`);
         })
     } catch (error) {
-        looger.error(`Failed to start server: ${error}`);
+        logger.error(`Failed to start server: ${error}`);
 
         if(config.NODE_ENV === "production"){
             process.exit(1)
@@ -95,11 +95,11 @@ app.use(limiter);
 const handleServerShutdown = async () => {
     try {
         await disconnectFromDatabase();
-        looger.info("server SHUTDOWN");
+        logger.info("server SHUTDOWN");
         process.exit(0);
         
     } catch (error) {
-        looger.error(`error during server shutdown: ${error}`);
+        logger.error(`error during server shutdown: ${error}`);
         
     }
 }

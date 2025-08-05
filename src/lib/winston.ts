@@ -38,9 +38,9 @@ if (config.NODE_ENV !== 'production') {
     )
 }
 
-// Create a looger instance using Winston
+// Create a logger instance using Winston
 
-const looger = winston.createLogger({
+const logger = winston.createLogger({
     level: config.LOG_LEVEL || 'info',
     format: combine(timestamp(), errors({stack: true}), json()),
     transports,
@@ -48,4 +48,4 @@ const looger = winston.createLogger({
 })
 
 
-export {looger}
+export {logger}
