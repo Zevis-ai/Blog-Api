@@ -10,6 +10,7 @@
 import {logger} from "@/lib/winston";
 import config from "@/config";
 import { genUsername } from "@/utils";
+import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 
 
 /**
@@ -45,6 +46,15 @@ const register = async (req: Request, res: Response): Promise<void> => {
 
         //generate access token end refresh token for the new user
 
+        const accessToken = generateAccessToken(newUser._id);
+        const refreshToken = generateRefreshToken(newUser._id);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: config.NODE_ENV === 'production',
+            sameSite: 'strict',
+        })
+            
 
         res.status(201).json({
             user: {
@@ -52,8 +62,14 @@ const register = async (req: Request, res: Response): Promise<void> => {
                 email: newUser.email,
                 role: newUser.role,
             },
-            
+            accessToken,
         })
+
+        logger.info(`User registered successfully: ${newUser}`, {
+            userName : newUser.userName,
+            email: newUser.email,
+            role: newUser.role,
+        });
     } catch (error) {
         res.status(500).json({
             code: 'ServerError',
