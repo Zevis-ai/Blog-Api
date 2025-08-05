@@ -13,6 +13,7 @@ import mongoose from "mongoose";
  * Custom modules
  */
 import config from "@/config";
+import { looger } from "@/lib/winston";
 
 /**
  * Types
@@ -39,7 +40,7 @@ export const connectToDatabase = async () : Promise<void> => {
     }
     try {
         await mongoose.connect(config.MONGO_URI, clientOptions);
-        console.log("Database connected", {
+        looger.info("Database connected", {
             uri: config.MONGO_URI,
             options: clientOptions,
         });
@@ -47,14 +48,14 @@ export const connectToDatabase = async () : Promise<void> => {
         if (error instanceof Error) {
             throw error            
         }
-        console.log(`Failed to connect to database: ${error}`);
+        looger.error(`Failed to connect to database: ${error}`);
     }
 }
 
 export const disconnectFromDatabase = async () : Promise<void> => {
     try {
         await mongoose.disconnect();
-        console.log("Disconnected from database successfully. ", {
+        looger.info("Disconnected from database successfully. ", {
             uri: config.MONGO_URI,
             options: clientOptions,
         });
@@ -62,6 +63,6 @@ export const disconnectFromDatabase = async () : Promise<void> => {
         if (error instanceof Error) {
             throw new Error(`Failed to disconnect from database: ${error.message}`);            
         }
-        console.log(`Failed to disconnect from database: ${error}`);
+        looger.error(`Failed to disconnect from database: ${error}`);
     }
 }
